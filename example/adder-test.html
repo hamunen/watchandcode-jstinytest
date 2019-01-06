@@ -1,16 +1,57 @@
 <script src="../tinytest.js"></script>
-<script src="adder.js"></script>
 <script>
+
+// Example 1
+// [1,2,3].forEach(function() {
+// console.log('hi');
+// });
+
+// Example 2
+// [1,2,3].forEach(function(i) {
+// console.log(i);
+// });
+
+function forEach(array, callback) {
+  for (var i = 0; i < array.length; i++) {
+    callback(array[i], i, array);
+  }
+}
+
 tests({
+  'Run the callback functio array.length times.': function() {
+    var counter = 0;
+    forEach([1,2,3], function() {
+      counter++;
+    });
 
-  'adds numbers': function() {
-    eq(6, add(2, 4));
-    eq(6.6, add(2.6, 4));
+    eq(counter, 3);
   },
 
-  'subtracts numbers': function() {
-    eq(-2, add(2, -4));
+  'Pass in the ith element as the first argument to callback.': function() {
+    forEach([1], function(number) {
+      eq(number,1);
+    });
   },
+
+  'Pass in the i:th position as the second argument to callback.': function() {
+    forEach([1], function(number, index) {
+      eq(index,0);
+    });
+  },
+
+  'Pass in the original array as the third argument to callback': function() {
+    var testArray = [1,2,3];
+    forEach(testArray, function(number, index, originalArray) {
+      eq(originalArray, testArray);
+    });
+  },
+
+  'Accept a configurable this object': function() {
+    var testArray = [1];
+    forEach(testArray, function(number, index, originalArray) {
+      fail();
+    }, {description: 'Congigurable this object'});
+  }
 
 });
 </script>
