@@ -11,9 +11,15 @@
 // console.log(i);
 // });
 
-function forEach(array, callback) {
+function forEach(array, callback, optionalThisObject) {
+  var forEachCallback = callback;
+
+  if (optionalThisObject) {
+    forEachCallback = callback.bind(optionalThisObject);
+  }
+
   for (var i = 0; i < array.length; i++) {
-    callback(array[i], i, array);
+    forEachCallback(array[i], i, array);
   }
 }
 
@@ -46,11 +52,11 @@ tests({
     });
   },
 
-  'Accept a configurable this object': function() {
+  'Accept an optional this object': function() {
     var testArray = [1];
-    forEach(testArray, function(number, index, originalArray) {
-      fail();
-    }, {description: 'Congigurable this object'});
+    forEach(testArray, function() {
+      eq(this.description, 'I should be accessible inside the callback') 
+    }, {description: 'I should be accessible inside the callback'});
   }
 
 });
