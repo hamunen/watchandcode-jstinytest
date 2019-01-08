@@ -1,0 +1,62 @@
+<script src="../tinytest.js"></script>
+<script>
+
+function map(originalArray, callback, optionalThis) {
+  return 0;
+}
+
+tests({
+  'Run the callback function array.length times.': function () {
+    var numberOfTimesCallbackHasRun = 0;
+    map([1, 2, 3], function () {
+      numberOfTimesCallbackHasRun++;
+    });
+
+    eq(numberOfTimesCallbackHasRun, 3);
+  },
+
+  'Pass in the ith element as the first argument to callback.': function () {
+    map([1], function (number) {
+      eq(number, 1);
+    });
+  },
+
+  'Pass in the i:th position as the  second argument to callback.': function () {
+    map([1], function (number, index) {
+      eq(index, 0);
+    });
+  },
+
+  'Pass in the original array as the third argument to callback': function () {
+    var testArray = [1, 2, 3];
+    map(testArray, function (number, index, originalArray) {
+      eq(originalArray, testArray);
+    });
+  },
+
+  'Accept an optional this object': function () {
+    var testArray = [1];
+    map(testArray, function () {
+      eq(this.description, 'I should be accessible inside the callback')
+    }, {description: 'I should be accessible inside the callback' });
+  },
+
+  'Return an array': function() {
+    var testArray = [1];
+    var mapedArray = map(testArray, function() {});
+    eq(Array.isArray(mapedArray), true);
+  },
+
+  'Return a new array, not the original array.': function () {
+    var testArray = [1];
+    var mapedArray = map(testArray, function() {});
+    eq(testArray !== mapedArray, true);
+  },
+
+  'New array has elements that have been transformed by callback.': function () {
+    fail();
+  }
+
+
+});
+</script>
