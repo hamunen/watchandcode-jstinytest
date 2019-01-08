@@ -2,7 +2,20 @@
 <script>
 
 function map(originalArray, callback, optionalThis) {
-  return 0;
+  var mapCallback = callback;
+  var resultArray = []
+
+  if (optionalThis) {
+    mapCallback = callback.bind(optionalThis);
+  }
+
+  for (var i = 0; i < originalArray.length; i++) {
+    if(i in originalArray) {
+      resultArray[i] = mapCallback(originalArray[i], i, originalArray);
+    }
+  }
+
+  return resultArray;
 }
 
 tests({
@@ -43,18 +56,29 @@ tests({
 
   'Return an array': function() {
     var testArray = [1];
-    var mapedArray = map(testArray, function() {});
-    eq(Array.isArray(mapedArray), true);
+    var mappedArray = map(testArray, function() {});
+    eq(Array.isArray(mappedArray), true);
   },
 
   'Return a new array, not the original array.': function () {
     var testArray = [1];
-    var mapedArray = map(testArray, function() {});
-    eq(testArray !== mapedArray, true);
+    var mappedArray = map(testArray, function() {});
+    eq(testArray !== mappedArray, true);
   },
 
   'New array has elements that have been transformed by callback.': function () {
-    fail();
+    var testArray = [1,2];
+    var testMultiplier = 3;
+    var mappedArray = map(testArray, function(val) {return testMultiplier * val;} );
+
+    eq(mappedArray[1],6);
+  },
+
+  'Skip unassigned indexes.': function () {
+    var testArray = [,1,2];
+    var mappedArray = map(testArray, function double(i) {return i*2;});
+    eq(0 in mappedArray, false);
+    eq(mappedArray[1], 2);
   }
 
 
