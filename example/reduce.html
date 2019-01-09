@@ -43,46 +43,50 @@ Requirements:
   */
 
 function reduce(originalArray, callback, initialValue) {
-  
+  var startingIndex = 0;
+
+  if(arguments.length < 3) {
+    startingIndex++;
+  }
+
+  for(var i = startingIndex; i < originalArray.length; i++) {
+    callback();
+  }  
 }
 
 tests({
-  'Run the callback function array.length times.': function () {
-    fail();
+  'If initialValue, callback should run array.length times.': function () {
+    var numberOfTimesCallbackRun = 0;
+    reduce([1,2,3], function(previousValue) {
+      numberOfTimesCallbackRun++;
+    }, 0);
+    eq(numberOfTimesCallbackRun,3);
   },
-
-  'Pass in the ith element as the first argument to callback.': function () {
-    fail();
+  'If no initialValue, callback should run array.length - 1 times.': function () {
+    var numberOfTimesCallbackRun = 0;
+    reduce([1,2,3], function(previousValue) {
+      numberOfTimesCallbackRun++;
+    });
+    eq(numberOfTimesCallbackRun,2);
   },
-
-  'Pass in the i:th position as the  second argument to callback.': function () {
-    fail();
+  'If initialValue, previousValue should start with initialValue.': function () {
+    reduce([1], function(previousValue) {
+      eq(previousValue, 0);
+    }, 0);
   },
+  'If initialValue, currentValue should start with first element.': function () {fail();},
+  'If initialValue, callback should start at index 0.': function () {fail();},
 
-  'Pass in the original array as the third argument to callback': function () {
-    fail();
-  },
+  'If no initialValue, previousValue should start with first element.': function () {fail();},
+  'If no initialValue, currentValue should start with second element.': function () {fail();},
+  'If no initialValue, callback should start at index 1.': function () {fail();},
 
-  'Accept an optional this object': function () {
-    fail();
-  },
+  'If initialValue, and array is empty, return initialValue without calling callback.': function () {fail();},
+  'If no initialValue, and array has one element, return that element without calling callback.': function () {fail();},
 
-  'Return an array': function() {
-    fail();
-  },
-
-  'Return a new array, not the original array.': function () {
-    fail();
-  },
-
-  'New array has elements that have been transformed by callback.': function () {
-    fail();
-  },
-
-  'Skip unassigned indexes.': function () {
-    fail();
-  }
-
-
+  'Should actually reduce.': function () {fail();},
+  'Should exclude holes.': function () {fail();},
+  'If array is empty, and no initialValue, throw TypeError.': function () {fail();},
+  'Pass array as fourth argument to the callback.': function () {fail();}
 });
 </script>
