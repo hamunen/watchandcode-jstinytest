@@ -45,32 +45,34 @@ Requirements:
 function reduce(array, callback, initialValue) {
   var startingIndex = 0;
   var resultSoFar = initialValue;
+  var arrayIndexes = Object.keys(array);
+  var length = array.length; //Fix length so callback cannot alter it
 
   //No initialValue
   if (arguments.length < 3) {
     //Array is empty -> throw TypeError
-    if (Object.keys(array).length === 0) {
-      throw new TypeError('Reduce of empty array without initial value.');
+    if (arrayIndexes.length === 0) {
+      throw new TypeError('Reduce of empty array without initial value');
     }
 
     //If array has one element, return it
-    if (Object.keys(array).length === 1) {
-      var onlyIndex = Object.keys(array)[0];
+    if (arrayIndexes.length === 1) {
+      var onlyIndex = arrayIndexes[0];
       return array[onlyIndex];
     }
 
-    var firstIndex = Object.keys(array)[0];
+    var firstIndex = arrayIndexes[0];
     resultSoFar = array[firstIndex];
-    startingIndex = Object.keys(array)[1];
+    startingIndex = arrayIndexes[1];
 
   //Has initialValue
   } else {
-    if (Object.keys(array).length === 0) {
+    if (arrayIndexes.length === 0) {
       return initialValue;
     }
   }
 
-  for(var i = startingIndex; i < array.length; i++) {
+  for(var i = startingIndex; i < length; i++) {
     if (i in array) {
       resultSoFar = callback(resultSoFar, array[i], i, array);
     }
