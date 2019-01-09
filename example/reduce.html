@@ -1,8 +1,49 @@
 <script src="../tinytest.js"></script>
 <script>
 
+/* Prototype:
+function reduce(originalArray, callback, initialValue) {}
+var resultSoFar = initialValue;
+  for (var i = 0; i < originalArray.length; i++) {
+    resultSoFar = callback(resultSoFar, originalArray[i], i, originalArray)
+  }
+  return resultSoFar;
+}
+
+The reduce() method executes a reducer function (that you provide) on each member of the array resulting in a single output value.
+
+Function signature:
+reduce(array, callback[, initialvalue])
+
+Returns a single value.
+
+Callback parameters:
+- previousValue
+- currentValue
+- currentIndex
+- array 
+
+Requirements:
+- It should actually reduce array to a single output value.
+- Callback should not run on holes in the array
+
+- If initialValue is provided
+  - previousValue = initialValue
+  - currentValue = first value in array
+  - callback will start at index 0
+- If initialValue not provided
+  - previousValue = first value in array
+  - currentValue = second value in array
+  - callback will start at index 1
+
+  Edge cases
+  - If array is empty and no initialValue provided -> throw TypeError
+  - If no initialValue and array has one element, return only element without calling callback
+  - If initialValue and array is empty, return initialValue without calling callback
+  */
+
 function reduce(originalArray, callback, initialValue) {
-  return 0;
+  
 }
 
 tests({
