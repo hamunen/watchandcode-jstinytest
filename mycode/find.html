@@ -12,70 +12,126 @@
     returns the value of the first element in the array that satisfies the provided testing function; otherwise, undefined is returned.
 
     If a thisArg parameter is provided to find, it will be used as the this for each invocation of the callback. If it is not provided, then undefined is used.
+    --Comment: don't understand what is meant by "undefined is used"
 
     find does not mutate the array on which it is called.
 
     callback is invoked for every index of the array from 0 to length - 1 and is invoked for all indexes, not just those that have been assigned values. 
 
+    The range of elements processed by find is set before the first invocation of callback. Elements that are appended to the array after the call to find begins will not be visited by callback. If an existing, unvisited element of the array is changed by callback, its value passed to the visiting callback will be the value at the time that find visits that element's index; elements that are deleted are still visited.
   */
 
-function find(array, callback, thisArg) {
+  function find(array, callback, thisArg) {
+    var arrLength = array.length;
+    var findCallback = thisArg ? callback.bind(thisArg) : callback;
 
-  for (var i = 0; i < array.length; i++) {
-    if(callback(array[i], i, array)) {
-      return array[i];
+    for (var i = 0; i < arrLength; i++) {
+      if (findCallback(array[i], i, array)) {
+        return array[i];
+      }
     }
+    return undefined;
   }
-}
 
-tests({
-  'If array not empty, callback should be run at least once': function () {
-    var testArray = [1];
-    var numberOfTimesCallbackHasRun = 0;
-    find(testArray, function(currentElement) {
-      numberOfTimesCallbackHasRun++;
-    });
-    eq(numberOfTimesCallbackHasRun, 1);
-  },
-  'If no satisfying element, invoked to every index from 0 to length - 1': function () {
-    var testArray = [1,2,3];
-    var numberOfTimesCallbackHasRun = 0;
-    find(testArray, function(currentElement) {
-      numberOfTimesCallbackHasRun++;
-      return false;
-    });
-    eq(numberOfTimesCallbackHasRun, 3);
-  },
-  'Current element passed to callback': function () {
-    var testArray = [1];
-    find(testArray, function(currentElement) {
-      eq(currentElement, 1);
-    });
-  },
-  'Index of current element passed to callback': function () {
-    var testArray = [1];
-    find(testArray, function(currentElement, index) {
-      eq(index, 0);
-    });
-  },
-  'Original array passed to callback': function () {
-    var testArray = [1];
-    find(testArray, function(currentElement, index, array) {
-      eq(array, testArray);
-    });
-  },
-  'Returns first element in array that results to true in callback': function () {
-    var testArray = [1,2,3];
-    var testResult = find(testArray, function(currentElement, index, array) {
-      return currentElement > 1;
-    });
-    eq(testResult,2);
-  },
-  'If no true value found, returns undefined': function () {fail();},
-  'If thisArg provided, should be used as this in callback': function () {fail();},
-  'If no thisArg provided, this incallback should be undefined': function () {fail();},
-  'Does not mutate the original array': function () {fail();},
-  'Invoked for all indexes, including holes': function () {fail();}
-});
+  tests({
+    'If array not empty, callback should be run at least once': function () {
+      var testArray = [1];
+      var numberOfTimesCallbackHasRun = 0;
+      find(testArray, function (currentElement) {
+        numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun, 1);
+    },
+    'If no satisfying element, invoked to every index from 0 to length - 1': function () {
+      var testArray = [1, 2, 3];
+      var numberOfTimesCallbackHasRun = 0;
+      find(testArray, function (currentElement) {
+        numberOfTimesCallbackHasRun++;
+        return false;
+      });
+      eq(numberOfTimesCallbackHasRun, 3);
+    },
+    'Current element passed to callback': function () {
+      var testArray = [1];
+      find(testArray, function (currentElement) {
+        eq(currentElement, 1);
+      });
+    },
+    'Index of current element passed to callback': function () {
+      var testArray = [1];
+      find(testArray, function (currentElement, index) {
+        eq(index, 0);
+      });
+    },
+    'Original array passed to callback': function () {
+      var testArray = [1];
+      find(testArray, function (currentElement, index, array) {
+        eq(array, testArray);
+      });
+    },
+    'Returns first element in array that results to true in callback': function () {
+      var testArray = [1, 2, 3];
+      var testResult = find(testArray, function (currentElement, index, array) {
+        return currentElement > 1;
+      });
+      eq(testResult, 2);
+    },
+    'If no true value found, returns undefined': function () {
+      var testArray = [1, 2, 3];
+      var testResult = find(testArray, function (currentElement, index, array) {
+        return false;
+      });
+      eq(testResult, undefined);
+    },
+    'If thisArg provided, should be used as this in callback': function () {
+      var testArray = [1];
+      find(testArray, function () {
+        eq(this.description, 'I should be accessible inside the callback')
+      }, { description: 'I should be accessible inside the callback' });
+    },
+    'Does not mutate the original array': function () {
+      var testArray = [1,2,3];
+      find(testArray, function (currentElement, index, array) {
+        eq(array, testArray);
+      });
+      eq(testArray.length,3);
+      eq(testArray[0], 1);
+      eq(testArray[1], 2);
+      eq(testArray[2], 3);
+    },
+    'Invoked for all indexes, including holes': function () {
+      var testArray = [,,1,2,,, 3,undefined];
+      var numberOfTimesCallbackHasRun = 0;
+      var testResult = find(testArray, function (currentElement, index, array) {
+        numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun, 8);
+    },
+    'Not invoked for elements added to array after the function call': function () {
+      var testArray = [1,2,3];
+      var numberOfTimesCallbackHasRun = 0;
+      var testResult = find(testArray, function (currentElement, index, array) {
+        numberOfTimesCallbackHasRun++;
+        array.push(4);
+      });
+      eq(numberOfTimesCallbackHasRun, 3);
+    },
+    'Pass current value of element to the callback': function () {
+      var testArray = [1,2,3];
+      var testResult = find(testArray, function (currentElement, index, array) {
+        if (index === 0) {array[1] = 9;}
+        if (index === 1) {eq(currentElement,9);}
+      });
+    },
+    'Visit also deleted indexes': function () {
+      var testArray = [1,2,3];
+      var numberOfTimesCallbackHasRun = 0;
+      var testResult = find(testArray, function (currentElement, index, array) {
+        if (index === 0) {delete array[1];}
+        numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun,3);
+    }
+  });
 
 </script>
