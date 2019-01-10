@@ -1,1 +1,1 @@
-My watchandcode excercises
+My watchandcode exercises
