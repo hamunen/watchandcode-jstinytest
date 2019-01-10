@@ -1,12 +1,81 @@
 <script src="../simpletest.js"></script>
 <script>
 
-function find() {
+  /*
+    find(array, callback[, thisArg])
+
+    callback takes arguments:
+    - element: The current element being processed in the array.
+    - index: The index of the current element being processed in the array.
+    - array: The array find was called upon.
+
+    returns the value of the first element in the array that satisfies the provided testing function; otherwise, undefined is returned.
+
+    If a thisArg parameter is provided to find, it will be used as the this for each invocation of the callback. If it is not provided, then undefined is used.
+
+    find does not mutate the array on which it is called.
+
+    callback is invoked for every index of the array from 0 to length - 1 and is invoked for all indexes, not just those that have been assigned values. 
+
+  */
+
+function find(array, callback, thisArg) {
+
+  for (var i = 0; i < array.length; i++) {
+    if(callback(array[i], i, array)) {
+      return array[i];
+    }
+  }
 }
 
 tests({
-  'Test here': function () {fail();},
-  'Test here 2': function () {fail();}
+  'If array not empty, callback should be run at least once': function () {
+    var testArray = [1];
+    var numberOfTimesCallbackHasRun = 0;
+    find(testArray, function(currentElement) {
+      numberOfTimesCallbackHasRun++;
+    });
+    eq(numberOfTimesCallbackHasRun, 1);
+  },
+  'If no satisfying element, invoked to every index from 0 to length - 1': function () {
+    var testArray = [1,2,3];
+    var numberOfTimesCallbackHasRun = 0;
+    find(testArray, function(currentElement) {
+      numberOfTimesCallbackHasRun++;
+      return false;
+    });
+    eq(numberOfTimesCallbackHasRun, 3);
+  },
+  'Current element passed to callback': function () {
+    var testArray = [1];
+    find(testArray, function(currentElement) {
+      eq(currentElement, 1);
+    });
+  },
+  'Index of current element passed to callback': function () {
+    var testArray = [1];
+    find(testArray, function(currentElement, index) {
+      eq(index, 0);
+    });
+  },
+  'Original array passed to callback': function () {
+    var testArray = [1];
+    find(testArray, function(currentElement, index, array) {
+      eq(array, testArray);
+    });
+  },
+  'Returns first element in array that results to true in callback': function () {
+    var testArray = [1,2,3];
+    var testResult = find(testArray, function(currentElement, index, array) {
+      return currentElement > 1;
+    });
+    eq(testResult,2);
+  },
+  'If no true value found, returns undefined': function () {fail();},
+  'If thisArg provided, should be used as this in callback': function () {fail();},
+  'If no thisArg provided, this incallback should be undefined': function () {fail();},
+  'Does not mutate the original array': function () {fail();},
+  'Invoked for all indexes, including holes': function () {fail();}
 });
 
 </script>
