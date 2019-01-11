@@ -83,7 +83,7 @@
       var newArray = concat(testArray, objArray);
       eq(newArray[3] === obj, true);
     },
-    'Copies object references into the new array. Both original and new array refer to same object (arg is not array)': function () {
+    'Copies non-primitive object references into the new array. Both original and new array refer to same object (arg is not array)': function () {
       var testArray = [1, 2, 3];
       var obj = { test: 1 };
       var newArray = concat(testArray, obj);
@@ -125,7 +125,7 @@
       eq(testArray[2], 3);
       eq(testArray.length, 3);
     },
-    'Any operation on the new array literal values will have no effect on the original arrays, and vice versa.': function () {
+    'Any operation on the new array primitive values will have no effect on the original arrays, and vice versa.': function () {
       var testArray = [1, 2, 3];
       var concatArray = [4, 5, 6];
       var newArray = concat(testArray, concatArray);
