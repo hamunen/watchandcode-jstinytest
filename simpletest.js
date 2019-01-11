@@ -90,10 +90,21 @@ var SimpleTest = {
         }
     },
 
+    assertArrayEquals: function (a, b) {
+        //if (a === b) return true;
+        if (a == null || b == null) throw new Error('assertStrictEquals() "' + a + '" !== "' + b + '"');
+        if (a.length != b.length) throw new Error('assertStrictEquals() "' + a + '" !== "' + b + '"');
+
+        for (var i = 0; i < a.length; ++i) {
+            if (a[i] !== b[i]) throw new Error('assertStrictEquals() "' + a + '" !== "' + b + '"');
+        }
+    }
+
 };
 
 var fail = SimpleTest.fail.bind(SimpleTest),
     assert = SimpleTest.assert.bind(SimpleTest),
     eq = SimpleTest.assertStrictEquals.bind(SimpleTest), // alias for assertEquals
     assertStrictEquals = SimpleTest.assertStrictEquals.bind(SimpleTest),
-    tests = SimpleTest.run.bind(SimpleTest);
+    tests = SimpleTest.run.bind(SimpleTest),
+    eqArrays = SimpleTest.assertArrayEquals.bind(SimpleTest);

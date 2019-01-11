@@ -1,0 +1,172 @@
+<script src="../simpletest.js"></script>
+<script>
+
+  /*
+    var new_array = old_array.concat([value1[, value2[, ...[, valueN]]]])
+
+    The concat() method is used to merge two or more arrays. This method does not change the existing arrays, but instead returns a new array.
+
+    valueN = Arrays and/or values to concatenate into a new array. 
+    
+--------------------------------
+
+    - Returns an Array instance
+    - If no arguments, returns copy of initialArray
+    - If arguments, returns Array consisting of the elements in initialArray, followed in order by, for each argument
+      - elements of that argument (if the argument is an array) or 
+      - the argument itself (if the argument is not an array)
+    - Can take any number of arguments, and concatenates all
+
+    - Elements are copied as follows:
+      - Object references (and not the actual object): copies object references into the new array. Both the original and new array refer to the same object. 
+      - Data types such as strings, numbers and booleans (not String, Number, and Boolean objects): concat copies the values of strings and numbers into the new array.
+      - (Undefined copied as undefined)
+      
+    - It does not recurse into nested array arguments.
+    - Does not alter this
+
+    - does not alter any of the arrays provided as arguments
+    - any operation on the new array (except operations on elements which are object references) will have no effect on the original arrays, and vice versa.
+  */
+
+  function concat(...args) {
+    array = [];
+
+    for (var k = 0; k < args.length; k++) {
+      var currentElement = args[k];
+      if (Array.isArray(currentElement)) {
+        for (var i = 0; i < currentElement.length; i++) {
+          array.push(currentElement[i]);
+        }
+      } else {
+        array.push(currentElement);
+      }
+    }
+
+    return array;
+  }
+
+  tests({
+    'Returns an Array instance.': function () {
+      var testArray = [1, 2, 3];
+      var newArray = concat(testArray, [4, 5, 6]);
+      eq(Array.isArray(newArray), true);
+    },
+    'If no arguments, returns copy of initialArray': function () {
+      var testArray = [1, 2, 3];
+      var newArray = concat(testArray);
+      eq(newArray[0], 1);
+      eq(newArray[1], 2);
+      eq(newArray[2], 3);
+      eq(newArray.length, 3);
+    },
+    'If argument is array, returns initialArray concatenated with elements from the argument array': function () {
+      var testArray = [1, 2, 3];
+      var newArray = concat(testArray, [4, 5, 6]);
+      eqArrays(newArray, [1, 2, 3, 4, 5, 6]);
+    },
+    'If argument is not array, returns initialArray concatenated with the argument itself': function () {
+      var testArray = [1, 2, 3];
+      var newArray = concat(testArray, 4);
+      eqArrays(newArray, [1, 2, 3, 4]);
+    },
+    'Can take multiple arguments, both array and not array': function () {
+      var testArray = [1, 2, 3];
+      var newArray = concat(testArray, 4, [5, 6, 7], 8, 9);
+      eqArrays(newArray, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    },
+
+    'Copies object references into the new array. Both original and new array refer to same object (arg is array)': function () {
+      var testArray = [1, 2, 3];
+      var obj = { test: 1 };
+      var objArray = [obj, { test: 2 }];
+      var newArray = concat(testArray, objArray);
+      eq(newArray[3] === obj, true);
+    },
+    'Copies object references into the new array. Both original and new array refer to same object (arg is not array)': function () {
+      var testArray = [1, 2, 3];
+      var obj = { test: 1 };
+      var newArray = concat(testArray, obj);
+      eq(newArray[3] === obj, true);
+    },
+
+    'Undefined copied as undefined': function () {
+      var testArray = [1, 2, 3];
+      var newArray = concat(testArray, undefined, [4, 5, 6]);
+      eqArrays(newArray, [1, 2, 3, undefined, 4, 5, 6]);
+    },
+
+
+    'Does not recurse into nested array arguments': function () {
+      var testArray = [1, 2, 3];
+      var arr2 = [[4,5],['a'], [['b'],['c']]];
+      var newArray = concat(testArray, arr2);
+      eq(Array.isArray(newArray[3]), true);
+      eq(newArray.length, 6);
+      eq(newArray[3].length, 2);
+      eq(newArray[5][1][0], 'c');
+    },
+    'Does not alter this': function () {
+      this.testVar = 'test';
+      var testArray = [1, 2, 3];
+      var newArray = concat(testArray, undefined, [4, 5, 6]);
+      eq(this.testVar, 'test');
+    },
+    'Does not alter any of the arrays provided as arguments': function () {
+      var testArray = [1, 2, 3];
+      var concatArray = [4, 5, 6];
+      concat(testArray, concatArray);
+      eq(concatArray[0], 4);
+      eq(concatArray[1], 5);
+      eq(concatArray[2], 6);
+      eq(concatArray.length, 3);
+      eq(testArray[0], 1);
+      eq(testArray[1], 2);
+      eq(testArray[2], 3);
+      eq(testArray.length, 3);
+    },
+    'Any operation on the new array literal values will have no effect on the original arrays, and vice versa.': function () {
+      var testArray = [1, 2, 3];
+      var concatArray = [4, 5, 6];
+      var newArray = concat(testArray, concatArray);
+
+      newArray[0] = 'x';
+      eq(testArray[0], 1);
+      newArray[5] = 'x';
+      eq(concatArray[2], 6);
+
+      testArray[1] = 'y';
+      eq(newArray[1], 2);
+      concatArray[0] = 'y';
+      eq(newArray[3], 4);
+    },
+
+    'Includes holes': function () {
+      const letters = ['a', , 'b', 'c'];
+      const numbers = [1, , 2, 3];
+      var newArray = concat(letters, numbers);
+      eqArrays(newArray, ['a', , 'b', 'c', 1, , 2, 3]);
+    },
+
+    'Concatenating letters and numbers': function () {
+      const letters = ['a', 'b', 'c'];
+      const numbers = [1, 2, 3];
+      var newArray = concat(letters, numbers);
+      eqArrays(newArray, ['a', 'b', 'c', 1, 2, 3]);
+    },
+    'Concatenating nested arrays': function () {
+      const num1 = [[1]];
+      const num2 = [2, [3]];
+      var newArray = concat(num1, num2);
+      eq(newArray[0][0], 1)
+      eq(newArray[1], 2)
+      eq(newArray[2][0], 3)
+
+      num1[0].push(4);
+      eq(newArray[0][1], 4)
+      eq(newArray[1], 2)
+      eq(newArray[2][0], 3)
+    }
+  });
+
+</script>
