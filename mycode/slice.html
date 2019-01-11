@@ -1,0 +1,138 @@
+<script src="../simpletest.js"></script>
+<script>
+
+  /*
+    The slice() method returns a shallow copy of a portion of an array into a new array object selected from begin to end (end not included). The original array will not be modified.
+
+    Parameters:
+    - begin (optional): Zero-based index at which to begin extraction
+    - end (optional): Zero-based index before which to end extraction.
+
+    Return: A new array containing the extracted elements.
+
+    REQUIREMENTS:
+    - Should return an array
+    - If no end or begin, copy given array completely
+    - If begin provided, start new array at begin
+    - If begin < 0, start new array at array.length + begin
+    - If no begin or undefined, start new array at index 0
+    - if begin >= array.length, return empty array
+
+    - If end provided, end new array at end, not including index end
+    - If end < 0, end new array at array.length + end
+    - if no end, slice until the end of given array
+    - If end >= array.length, slice until the end of given array
+
+    - Does not alter original array (shallow copy)
+    - Copies object references - should refer to same object
+    - If a referenced object changes, the changes are visible to both the new and original arrays.
+    - For literals, changes to old/new array does not affect the other
+    - If a new element is added to either array, the other array is not affected.
+  */
+
+  function slice(originalArray, begin, end) {
+    var array = [];
+    var startIndex = begin ? begin : 0;
+    if (startIndex < 0) {startIndex += originalArray.length;}
+    var endIndex = end ? end : originalArray.length;
+    if (endIndex < 0) {endIndex += originalArray.length;}
+    if (endIndex >= originalArray.length) {endIndex = originalArray.length;}
+
+    if (end === 0 || endIndex === 0 || originalArray.length === 0) {
+      return array;
+    }
+    
+
+    for (var i = startIndex; i < endIndex; i++) {
+      array.push(originalArray[i]);
+    }
+    return array;
+  }
+
+  tests({
+    'Should return an array': function () {
+      eq(Array.isArray(slice([1,2,3])), true);
+    },
+    'Should return a new array, not same array': function () {
+      var testArray = [1,2,3];
+      eq(slice(testArray) === testArray, false);
+    },
+    'If no end or begin, copy given array completely': function () {
+      eqArrays(slice([1,2,3]), [1,2,3]);
+    },
+    'If begin provided, start new array at begin': function () {
+      eqArrays(slice([1,2,3], 0), [1,2,3]);
+      eqArrays(slice([1,2,3], 1), [2,3]);
+      eqArrays(slice([1,2,3], 2), [3]);
+    },
+    'If begin < 0, start new array at array.length + begin': function () {
+      eqArrays(slice([1,2,3], -3), [1,2,3]);
+      eqArrays(slice([1,2,3], -2), [2,3]);
+      eqArrays(slice([1,2,3], -1), [3]);
+    },
+    'If no begin or undefined, start new array at index 0': function () {
+      eqArrays(slice([1,2,3], undefined), [1,2,3]);
+    },
+    'if begin >= array.length, return empty array': function () {
+      var result = slice([1,2,3], 3);
+      eqArrays(result.length, 0);
+    },
+    'If end provided, end new array at end, not including index end': function () {
+      eqArrays(slice([1,2,3], 0, 1), [1]);
+      eqArrays(slice([1,2,3], 0, 2), [1,2]);
+      eqArrays(slice([1,2,3], 0, 0), []);
+    },
+    'If end < 0, end new array at array.length + end': function () {
+      eqArrays(slice([1,2,3], 0, -3), []);
+      eqArrays(slice([1,2,3], 0, -2), [1]);
+      eqArrays(slice([1,2,3], 0, -1), [1,2]);
+    },
+
+    'If end >= array.length, slice until the end of given array': function () {
+      eqArrays(slice([1,2,3], 0, 3), [1,2,3]);
+      eqArrays(slice([1,2,3], 0, 8), [1,2,3]);
+    },
+    'Does not alter original array (shallow copy)': function () {
+      var testArray = [1,2,3];
+      slice(testArray, 1,3);
+      eq(testArray.length,3);
+      eq(testArray[0], 1);
+      eq(testArray[1], 2);
+      eq(testArray[2], 3);
+    },
+    'Copies object references - should refer to same object': function () {
+      var obj = { test: 1 };
+      var testArray = [obj, 2, 3];
+      var newArray = slice(testArray, 0, 2);
+      eq(newArray[0] === obj, true);
+    },
+    'If a referenced object changes, the changes are visible to both the new and original arrays.': function () {
+      var obj = { test: 1 };
+      var testArray = [obj, 2, 3];
+      var newArray = slice(testArray, 0, 2);
+      obj.test = 2;
+      eq(newArray[0].test, 2);
+      eq(testArray[0].test, 2);
+    },
+    'For literals, changes to old/new array does not affect the other': function () {
+      var testArray = [1, 2, 3];
+      var newArray = slice(testArray);
+
+      newArray[0] = 'x';
+      eq(testArray[0], 1);
+      testArray[1] = 'y';
+      eq(newArray[1], 2);
+    },
+    'If a new element is added to either array, the other array is not affected.': function () {
+      var testArray = [1, 2, 3];
+      var newArray = slice(testArray);
+
+      newArray.push('x');
+      eq(testArray.length, 3);
+
+      testArray.push('x');
+      eq(newArray.length, 4);
+    },
+  });
+
+</script>
