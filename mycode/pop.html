@@ -1,0 +1,44 @@
+<script src="../simpletest.js"></script>
+<script>
+
+  /*
+  The pop() method removes the last element from an array and returns that element. This method changes the length of the array.
+
+  Parameters:
+  - none
+
+  The removed element from the array; undefined if the array is empty.
+
+  REQUIREMENTS:
+  - Remove the last element from the array
+  - Returns the last element
+  - If called on empty array, returns undefined
+  - changes the length of the array to length - 1
+   
+  */
+
+  function pop(array) {
+    if (array.length === 0) {return undefined;}
+
+    var poppedElement = array[array.length - 1];
+    array = array.length--;
+    return poppedElement;
+  }
+
+  tests({
+    'Remove the last element from the array (length changed)': function () {
+      var testArray = [1,2,3];
+      pop(testArray);
+      eq(testArray.length, 2);
+      eq(testArray[1], 2);
+    },
+    'Returns the last element': function () {
+      eq(pop([1,2,3]), 3);
+    },
+    'If called on empty array, returns undefined': function () {
+      eq(pop([]), undefined);
+    }
+
+  });
+
+</script>
