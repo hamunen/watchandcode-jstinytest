@@ -1,0 +1,69 @@
+<script src="../simpletest.js"></script>
+<script>
+
+  /*
+    The includes() method determines whether an array includes a certain value among its entries, returning true or false as appropriate.
+
+    Parameters:
+    - valueToFind: The value to search for
+    - fromIndex (optional): The index to start the search at
+
+    Return: A Boolean which is true if the value valueToFind is found within the array (or the part of the array indicated by the index fromIndex, if specified). Values of zero are all considered to be equal regardless of sign (that is, -0 is considered to be equal to both 0 and +0), but false is not considered to be the same as 0.
+
+    REQUIREMENTS:
+    - If valueToFind not found within the array, return false 
+    - If no fromIndex and valueToFind found within array, return true
+
+    For following, return true if valueToFind found within search range, else return false
+    - If fromIndex > 0, search from fromIndex to end of array
+    - If fromIndex < 0, search from array.length+fromIndex to end of array
+    - If fromIndex = 0, search whole array
+
+    - -0 should equal to +0 and 0
+    - false not considered same as 0
+    - i.e. strict equals ===
+
+  */
+
+  function includes(array, valueToFind, fromIndex) {
+    var startIndex = fromIndex ? fromIndex : 0;
+    if (startIndex < 0) {startIndex += array.length;}
+
+    for (var i = startIndex; i < array.length; i++) {
+      if (array[i] === valueToFind) {return true;}
+    }
+    return false;
+  }
+
+  tests({
+    'If valueToFind not found within the array, return false': function () {
+      eq(includes(['a','b','c'], 'x'), false);
+    },
+    'If no fromIndex and valueToFind found within array, return true': function () {
+      eq(includes(['a','b','c'], 'a'), true);
+      eq(includes(['a','b','c'], 'b'), true);
+      eq(includes(['a','b','c'], 'c'), true);
+    },
+    'If fromIndex > 0, search from fromIndex to end of array': function () {
+      eq(includes(['a','b','c'], 'a', 1), false);
+      eq(includes(['a','b','c'], 'b', 1), true);
+    },
+    'If fromIndex < 0, search from array.length+fromIndex to end of array': function () {
+      eq(includes(['a','b','c'], 'a', -2), false);
+      eq(includes(['a','b','c'], 'b', -2), true);
+    },
+    'If fromIndex = 0, search whole array': function () {
+      eq(includes(['a','b','c'], 'a', 0), true);
+      eq(includes(['a','b','c'], 'b', 0), true);
+      eq(includes(['a','b','c'], 'c', 0), true);
+    },
+    'Use strict equals': function () {
+      eq(includes([1], '1'), false);
+      eq(includes([0], false), false);
+      eq(includes([0], -0), true);
+      eq(includes([0], +0), true);
+    }
+
+  });
+
+</script>
