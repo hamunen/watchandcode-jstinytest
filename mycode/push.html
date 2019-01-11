@@ -1,0 +1,47 @@
+<script src="../simpletest.js"></script>
+<script>
+
+  /*
+  The push() method adds one or more elements to the end of an array and returns the new length of the array.
+
+  Parameters:
+  - elementN: The elements to add to the end of the array (requires one)
+
+  Return: The new length property of the object upon which the method was called.
+
+  REQUIREMENTS:
+  - Appends values to the end of array.
+  - Return: The new length property of the object upon which the method was called
+  - Can take any number of arguments to append
+   
+  */
+
+  function push(array, ...args) {
+    var index = array.length;
+    for (i in args) {
+      array[index] = args[i];
+      index++;
+    }
+
+    return array.length;
+  }
+
+  tests({
+    'Appends values to the end of array': function () {
+      var testArray = [1];
+      push(testArray,2)
+      eqArrays(testArray, [1,2]);
+    },
+    'Return: The new length property of the object upon which the method was called': function () {
+      eq(push([1],2),2);
+    },
+    'Can take any number of arguments to append': function () {
+      var testArray = [1];
+      push(testArray,2,3,4);
+      eqArrays(testArray, [1,2,3,4]);
+    }
+    
+
+  });
+
+</script>
