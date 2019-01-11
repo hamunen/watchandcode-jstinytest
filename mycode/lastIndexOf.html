@@ -1,0 +1,76 @@
+<script src="../simpletest.js"></script>
+<script>
+
+  /*
+    The lastIndexOf() method returns the last index at which a given element can be found in the array, or -1 if it is not present. The array is searched backwards, starting at fromIndex.
+
+    Parameters:
+    - searchElement: Element to locate in the array
+    - fromIndex (optional): The index to start the search at
+
+    Return: the last index of the element in the array; -1 if not found.
+
+    REQUIREMENTS:
+    - Returns last index of element in the array that matchces searchElement
+    - Returns -1 if searchElement not found
+
+    - If fromIndex < -array.length, returs -1 and array not searched.
+    - If fromIndex <0, start search from array.length + fromIndex
+    - If fromIndex >= array.length, whole array is searched
+    - else if fromIndex, start search backward from fromIndex
+    - If no fromIndex, whole array is searched.
+
+    - Compares searchElement with strict equality (===)
+
+  */
+
+  function lastIndexOf(array, searchElement, fromIndex) {
+    var startIndex = fromIndex ? fromIndex : array.length - 1;
+    if (startIndex < 0) {
+      startIndex = array.length + startIndex;
+    }
+
+    for (var i = startIndex; i >= 0; i--) {
+      if(array[i] === searchElement) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  tests({
+    'Returns last index of element in the array that matchces searchElement': function () {
+      eq(lastIndexOf([1,2,3], 2), 1);
+      eq(lastIndexOf([2,2,3], 2), 1);
+    },
+    'Returns -1 if searchElement not found': function () {
+      eq(lastIndexOf([1,2,3], 'x'), -1);
+    },
+    'If fromIndex, start search backward from fromIndex': function () {
+      eq(lastIndexOf(['a','b','c'], 'c', 1), -1);
+      eq(lastIndexOf(['a','b','c'], 'c', 2), 2);
+    },
+    'If fromIndex < -array.length, returs -1 and array not searched': function () {
+      eq(lastIndexOf(['a','b','c'], 'c', -4), -1);
+    },
+    'If fromIndex >= array.length, whole array is searched': function () {
+      eq(lastIndexOf(['a','b','c'], 'c', 3), 2);
+      eq(lastIndexOf(['a','b','c'], 'c', 30), 2);
+    },
+    'If no fromIndex, whole array is searched': function () {
+      eq(lastIndexOf(['a','b','c'], 'c'), 2);
+    },
+    'If fromIndex <0, start search from array.length + fromIndex': function () {
+      eq(lastIndexOf(['a','b','c'], 'c', -1), 2);
+      eq(lastIndexOf(['a','b','c'], 'c', -2), -1);
+      eq(lastIndexOf(['a','b','c'], 'b', -2), 1);
+    },
+    'Compares searchElement with strict equality (===)': function () {
+      eq(lastIndexOf([1], "1"), -1)
+
+    },
+
+  });
+
+</script>
