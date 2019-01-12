@@ -1,0 +1,53 @@
+<script src="../simpletest.js"></script>
+<script>
+
+  /*
+  The fill() method fills all the elements of an array from a start index to an end index with a static value. The end index is not included.
+
+  Parameters:
+    - Value: value to fill thearray with
+    - start (optional): Start index, defaults to 0.
+    - end: End index, defaults to this.length.
+
+  Return: The modified array.
+
+  REQUIREMENTS:
+  - Returns the modified array
+  - If no start or end, fills whole array with given value
+  - If no start, fills from start of array
+  - If no end, fills until end of array
+  - If start is negative, it is treated as length+start. 
+  - If end is negative, it is treated as length+end.
+  - Changes the given array
+  - If passed an object, it will copy the reference and fill the array with references to that object.
+   
+  */
+
+  function unshift(array, ...args) {
+    var newElementCount = args.length;
+
+    //Shift old elements
+    for (var i = array.length - 1; i >= 0; i--) {
+      array[i + newElementCount] = array[i];
+    }
+
+    for (var i = 0; i < newElementCount; i++) {
+      array[i] = args[i];
+    }
+
+    return array.length;
+  }
+
+  tests({
+    'Returns the modified array': function () {fail();},
+    'If no start or end, fills whole array with given value': function () {fail();},
+    'If no start, fills from start of array': function () {fail();},
+    'If no end, fills until end of array': function () {fail();},
+    'If start is negative, it is treated as length+start. ': function () {fail();},
+    'If end is negative, it is treated as length+end.': function () {fail();},
+    'Changes the given array': function () {fail();},
+    'If passed an object, it will copy the reference and fill the array with references to that object.': function () {fail();}
+
+  });
+
+</script>
