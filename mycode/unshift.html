@@ -1,0 +1,58 @@
+<script src="../simpletest.js"></script>
+<script>
+
+  /*
+  The unshift() method adds one or more elements to the beginning of an array and returns the new length of the array.
+
+  Parameters:
+    - elementN: The elements to add to the front of the array (requires one)
+
+  Return: The new length property of the object upon which the method was called.
+
+  REQUIREMENTS:
+  - Inserts given values to the beginning of the array
+  - Shifts existing array elements to the next index in the array
+  - Returns new length of the array
+  - Takes any number of elements to add
+   
+  */
+
+  function unshift(array, ...args) {
+    var newElementCount = args.length;
+
+    //Shift old elements
+    for (var i = array.length - 1; i >= 0; i--) {
+      array[i + newElementCount] = array[i];
+    }
+
+    for (var i = 0; i < newElementCount; i++) {
+      array[i] = args[i];
+    }
+
+    return array.length;
+  }
+
+  tests({
+    'Inserts given values to the beginning of the array': function () {
+      var testArray = [1,2];
+      unshift(testArray, 'x');
+      eqArrays(testArray, ['x',1,2]);
+    },
+    'Shifts existing array elements to the next index in the array': function () {
+      var testArray = [1,2];
+      unshift(testArray, 'x');
+      eqArrays(testArray, ['x',1,2]);
+    },
+    'Returns new length of the array': function () {
+      var testArray = [1,2];
+      eq(unshift(testArray, 'x'), 3);
+    },
+    'Takes any number of elements to add': function () {
+      var testArray = [1,2];
+      eq(unshift(testArray, 'x', 'y', 'z'), 5);
+      eqArrays(testArray, ['x', 'y', 'z',1,2]);
+    }
+
+  });
+
+</script>
