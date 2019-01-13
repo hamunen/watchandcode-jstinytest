@@ -9,7 +9,6 @@
     - start (optional): Zero based index at which to start copying elements from. 
     - end (optional): Zero based index at which to end copying elements from
 
-
   Return: The modified array.
 
   REQUIREMENTS:
@@ -26,23 +25,84 @@
   */
 
   function copyWithin(array, target, start, end) {
+    var copiedValues = [];
+    var len = array.length;
 
+    target = target < 0 ? len + target : target;
+
+    start = start && !isNaN(parseInt(start)) ? parseInt(start) : 0;
+    start = start < 0 ? len + start : start;
+
+    end = end && !isNaN(parseInt(end)) ? parseInt(end) : len;
+    end = end > len ? len : end;
+    end = end < 0 ? len + end : end;
+
+
+    for (var i = 0; start + i < end; i++) {
+      copiedValues[i] = array[start + i];
+    }
+    for (var i = 0; target + i < len && i < copiedValues.length; i++) {
+      array[target + i] = copiedValues[i];
+    }
+
+    return array;
   }
 
   tests({
     'If no start or end and target zero, returns unchanged array': function () {
-      
+      eqArrays(copyWithin([1,2,3,4,5], 0), [1,2,3,4,5]);
     },
-    'If target is positioned after start, the copied sequence will be trimmed to fit arr.length': function () {fail();},
-    'If target negative, target will be counted from the end': function () {fail();},
-    'If target is at or greater than arr.length, nothing will be copied. ': function () {fail();},
-    'If start, copies from start.': function () {fail();},
-    'If negative, start will be counted from the end': function () {fail();},
-    'Copies up to but not including end': function () {fail();},
-    'If negative, end will be counted from the end': function () {fail();},
-    'If start is omitted, copyWithin will copy from the start (defaults to 0)': function () {fail();},
-    'Modifies the original array': function () {fail();}
-
+    'If target is positioned after start, the copied sequence will start from that and be trimmed to fit arr.length': function () {
+      eqArrays(copyWithin([1,2,3,4,5], 1), [1,1,2,3,4]);
+      eqArrays(copyWithin([1,2,3,4,5], 2), [1,2,1,2,3]);
+      eqArrays(copyWithin([1,2,3,4,5], 3), [1,2,3,1,2]);
+      eqArrays(copyWithin([1,2,3,4,5], 4), [1,2,3,4,1]);
+    },
+    'If target negative, target will be counted from the end': function () {
+      eqArrays(copyWithin([1,2,3,4,5], -1), [1,2,3,4,1]);
+      eqArrays(copyWithin([1,2,3,4,5], -2), [1,2,3,1,2]);
+      eqArrays(copyWithin([1,2,3,4,5], -3), [1,2,1,2,3]);
+    },
+    'If target is at or greater than arr.length, nothing will be copied. ': function () {
+      eqArrays(copyWithin([1,2,3,4,5], 5), [1,2,3,4,5]);
+      eqArrays(copyWithin([1,2,3,4,5], 6), [1,2,3,4,5]);
+    },
+    'If start, copies from start.': function () {
+      eqArrays(copyWithin([1,2,3,4,5], 0, 3), [4,5,3,4,5]);
+      eqArrays(copyWithin([1,2,3,4,5], 0, 4), [5,2,3,4,5]);
+      eqArrays(copyWithin([1,2,3,4,5], 3, 2), [1,2,3,3,4]);
+      eqArrays(copyWithin([1,2,3,4,5], 3, 5), [1,2,3,4,5]);
+    },
+    'If negative, start will be counted from the end': function () {
+      eqArrays(copyWithin([1,2,3,4,5], 0, -1), [5,2,3,4,5]);
+      eqArrays(copyWithin([1,2,3,4,5], 0, -3), [3,4,5,4,5]);
+      eqArrays(copyWithin([1,2,3,4,5], -2, -3), [1,2,3,3,4]);
+    },
+    'Copies up to but not including end': function () {
+      eqArrays(copyWithin([1,2,3,4,5], 0, 1, 3), [2,3,3,4,5]);
+      eqArrays(copyWithin([1,2,3,4,5], 0, 1, 2), [2,2,3,4,5]);
+      eqArrays(copyWithin([1,2,3,4,5], 0, 1, 1), [1,2,3,4,5]);
+    },
+    'End >= arr.length': function () {
+      eqArrays(copyWithin([1,2,3,4,5], 0, 1, 7), [2,3,4,5,5]);
+    },
+    'If negative, end will be counted from the end': function () {
+      eqArrays(copyWithin([1,2,3,4,5], 0, 3, -1), [4,2,3,4,5]);
+      eqArrays(copyWithin([1,2,3,4,5], 0, 3, -2), [1,2,3,4,5]);
+      
+      eqArrays(copyWithin([1,2,3,4,5], 3, 1, -2), [1,2,3,2,3]);
+    },
+    'If start is omitted, copyWithin will copy from the start (defaults to 0)': function () {
+      eqArrays(copyWithin([1,2,3,4,5], 3, undefined, 2), [1,2,3,1,2]);
+      eqArrays(copyWithin([1,2,3,4,5], 3, NaN, 2), [1,2,3,1,2]);
+      eqArrays(copyWithin([1,2,3,4,5], 3, 'k', 2), [1,2,3,1,2]);
+      eqArrays(copyWithin([1,2,3,4,5], 3, '1', 2), [1,2,3,2,5]);
+    },
+    'Modifies the original array': function () {
+      var testArray = [1,2,3,4,5];
+      eq(copyWithin(testArray, 1, 2,5), testArray);
+    }
+    
   });
 
 </script>
