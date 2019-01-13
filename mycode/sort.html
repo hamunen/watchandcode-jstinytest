@@ -2,33 +2,113 @@
 <script>
 
   /*
-  The reverse() method reverses an array in place. The first array element becomes the last, and the last array element becomes the first.
+  The sort() method sorts the elements of an array in place and returns the array. The default sort order is built upon converting the elements into strings, then comparing their sequences of UTF-16 code units values.
 
   Parameters:
-    - none
+    - compareFunction (optional): Specifies a function that defines the sort order. 
+      - firstEl: first element for comparison
+      - secondEl: second element for comparison
 
-  Return: The reversed array.
+  Return: The sorted array. Note that the array is sorted in place, and no copy is made.
 
-  The reverse method transposes the elements of the calling array object in place, mutating the array, and returning a reference to the array.
 
   REQUIREMENTS:
-  - The reverse method transposes the elements of the calling array object (in place)
-  - Mutates the original array
-  - Returns a reference to the array
+  - Returns (sorted) array
+  - If no compareFunction, all non-undefined array elements are sorted by converting them to strings and comparing strings in UTF-16 code units order.
+  - All undefined elements are sorted to the end of the array.
+  - If compareFunction(a, b) is less than 0, sort a to an index lower than b
+  - If compareFunction(a, b) returns 0, leave a and b unchanged with respect to each other, but sorted with respect to all different elements. 
+   -If compareFunction(a, b) is greater than 0, sort b to an index lower than a (i.e. b comes first).
+  - If compareFunction, All undefined elements are sorted to the end of the array, with no call to compareFunction
+  - Modifies given array
+
    
   */
 
-  function reverse(array) {
+  function sort(array, compareFunction) {
+    var i = 1;
+    var temp; var j;
 
+    compareFunction = compareFunction ? compareFunction : function(a, b)  {
+      a = '' + a;
+      b = '' + b;
+
+      return a.localeCompare(b);
+    }
+
+    /* Handle undefined before calling compareFunction */
+    function compare(a,b) {
+      if (a == undefined || typeof a === 'object') {
+        if (b == undefined || typeof b === 'object') {return 0;}
+        return 1;
+      }
+      if (b == undefined || typeof b === 'object') {return -1;}
+
+      return compareFunction(a,b);
+    }
+
+    while (i < array.length) {
+      temp = array[i];
+      j = i - 1;
+      while (j >= 0 && compare(array[j],temp) > 0) {
+        array[j+1] = array[j];
+        j--;
+      }
+      array[j+1] = temp;
+      i++;
+    }
+
+    return array;
   }
 
   tests({
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();}
+    'Returns (sorted) array': function () {
+      eqArrays(sort([1]), [1]);
+      eqArrays(sort([3,1,2]), [1,2,3]);
+      eqArrays(sort([3,1,2,5,8]), [1,2,3,5,8]);
+      eqArrays(sort([3,1,2,5,1]), [1,1,2,3,5]);
+      var o1 = {desc: 'ygön'}
+      var o2 = {desc: 'kgon'}
+      eqArrays(sort([1,2,o2,o1,6,7]), [1,2,6,7,o2,o1]);
+    },
+    'If no compareFunction, all non-undefined array elements are sorted by converting them to strings and comparing strings in UTF-16 code units order.': function () {
+      eqArrays(sort(['cherry', 'banana']), ['banana', 'cherry']);
+      eqArrays(sort([9, 80]), [80, 9]); //Unicode order
+    },
+    'All undefined elements are sorted to the end of the array.': function () {
+      //Can't be bothered doing all the null > undefined > empty stuff
+      eqArrays(sort([undefined,3,1,undefined,2,5,1]), [1,1,2,3,5,undefined,undefined]);
+    },
+    'If compareFunction(a, b), sort with that': function () {
+      function compareFunction(a,b) {
+        return a - b;
+      }
+      eqArrays(sort([3,1,2], compareFunction), [1,2,3]);
+      eqArrays(sort([3,1,2,1,6,5], compareFunction), [1,1,2,3,5,6]);
+    },
+    'If compareFunction(a, b) returns 0, leave a and b unchanged with respect to each other, but sorted with respect to all different elements.': function () {
+      function compareFunction(a,b) {
+        return 0;
+      }
+      eqArrays(sort([3,1,2], compareFunction), [3,1,2]);
+    },
+    'If compareFunction, All undefined elements are sorted to the end of the array, with no call to compareFunction': function () {
+      var result = sort([3,undefined,1,undefined,2], function compareFunction(a,b) {
+        if (a === undefined || b === undefined) {
+          fail();
+        }
+        return 0;
+      });
+      eqArrays(result, [3,1,2,undefined,undefined]);
+      
+    },
+    'Modifies given array': function () {
+      var testArray = [3,1,2];
+      sort(testArray);
+      eqArrays(testArray, [1,2,3]);
+    }
+
+
 
   });
 
