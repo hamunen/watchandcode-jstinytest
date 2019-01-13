@@ -15,7 +15,7 @@
   - Returns the modified array
   - If no start or end, fills whole array with given value
   - If no start, fills from start of array
-  - If no end, fills until end of array
+  - If end, fills until end index (not inclusive)
   - If start is negative, it is treated as length+start. 
   - If end is negative, it is treated as length+end.
   - Changes the given array
@@ -23,30 +23,62 @@
    
   */
 
-  function unshift(array, ...args) {
-    var newElementCount = args.length;
-
-    //Shift old elements
-    for (var i = array.length - 1; i >= 0; i--) {
-      array[i + newElementCount] = array[i];
+  function fill(array, value, start, end) {
+    if (arguments.length > 3 && isNaN(start) && isNaN(end)) {return array;  }
+    var startIndex = start ? start : 0;
+    if (startIndex < 0) {startIndex += array.length;}
+    var endIndex = end === 0 || end ? end : array.length;
+    if (endIndex < 0) {endIndex += array.length;}
+    
+    for (var i = startIndex; i < endIndex; i++) {
+      array[i] = value;
     }
 
-    for (var i = 0; i < newElementCount; i++) {
-      array[i] = args[i];
-    }
-
-    return array.length;
+    return array;
   }
 
   tests({
-    'Returns the modified array': function () {fail();},
-    'If no start or end, fills whole array with given value': function () {fail();},
-    'If no start, fills from start of array': function () {fail();},
-    'If no end, fills until end of array': function () {fail();},
-    'If start is negative, it is treated as length+start. ': function () {fail();},
-    'If end is negative, it is treated as length+end.': function () {fail();},
-    'Changes the given array': function () {fail();},
-    'If passed an object, it will copy the reference and fill the array with references to that object.': function () {fail();}
+    'Returns the modified array': function () {
+      eqArrays(fill([1], 2), [2]);
+      },
+    'If no start or end, fills whole array with given value': function () {
+      eqArrays(fill([1,2,3], 2), [2,2,2]);
+    },
+    'If start and no end, fills from start index to end of array': function () {
+      eqArrays(fill([1,2,3], 9, 1), [1,9,9]);
+      eqArrays(fill([1,2,3], 9, 2), [1,2,9]);
+    },
+    'If end, fills until end index, not inclusive': function () {
+      eqArrays(fill([1,2,3], 9, 0, 3), [9,9,9]);
+      eqArrays(fill([1,2,3], 9, 0, 2), [9,9,3]);
+      eqArrays(fill([1,2,3], 9, 0, 1), [9,2,3]);
+      eqArrays(fill([1,2,3], 9, 0, 0), [1,2,3]);
+    },
+    'If start is negative, it is treated as length+start. ': function () {
+      eqArrays(fill([1,2,3], 4, -3), [4,4,4]);
+      eqArrays(fill([1,2,3], 4, -2), [1,4,4]);
+      eqArrays(fill([1,2,3], 4, -1), [1,2,4]);
+    },
+    'If end is negative, it is treated as length+end.': function () {
+      eqArrays(fill([1,2,3], 4, 0, -3), [1,2,3]);
+      eqArrays(fill([1,2,3], 4, 0, -2), [4,2,3]);
+      eqArrays(fill([1,2,3], 4, 0, -1), [4,4,3]);
+      eqArrays(fill([1,2,3], 4, -3, -2), [4,2,3]);
+    },
+    'Changes the given array': function () {
+      var testArray = [1,2,3];
+      fill(testArray, 4);
+      eqArrays(testArray, [4,4,4]);
+    },
+    'If passed an object, it will copy the reference and fill the array with references to that object.': function () {
+      var obj = {test:1};
+      var testArray = [1,2,3];
+      fill(testArray, obj);
+      eq(testArray[0], obj);
+    },
+    'NaN test. ': function () {
+      eqArrays(fill([1,2,3], 4, NaN, NaN), [1,2,3]);
+    }
 
   });
 
