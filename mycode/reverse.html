@@ -12,23 +12,34 @@
   The reverse method transposes the elements of the calling array object in place, mutating the array, and returning a reference to the array.
 
   REQUIREMENTS:
-  - The reverse method transposes the elements of the calling array object (in place)
-  - Mutates the original array
+  - Mutates the original array. Transposes the elements of the calling array object (in place)
   - Returns a reference to the array
    
   */
 
   function reverse(array) {
+    var temp;
+    var len = array.length;
+    for (var i = 0; i < len / 2 - 1; i++) {
+      temp = array[i];
+      array[i] = array[len - 1 - i];
+      array[len - 1 - i] = temp;
+    }
 
+    return array;
   }
 
+
   tests({
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();}
+    'Mutates the original array. Transposes the elements of the calling array object': function () {
+      var testArray = [1,2,3];
+      reverse(testArray);
+      eqArrays(testArray, [3,2,1]);
+    },
+    'Returns a reference to the array': function () {
+      var testArray = [1,2,3];
+      eq(testArray, reverse(testArray));
+    }
 
   });
 
