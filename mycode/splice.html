@@ -2,33 +2,133 @@
 <script>
 
   /*
-  The reverse() method reverses an array in place. The first array element becomes the last, and the last array element becomes the first.
+  The splice() method changes the contents of an array by removing or replacing existing elements and/or adding new elements.
 
   Parameters:
-    - none
+    - start: Index at which to start changing the array (with origin 0).
+    - deleteCount (optional): An integer indicating the number of old array elements to remove
+    - item1, item2, ... (Optional): The elements to add to the array, beginning at the start index. If you don't specify any elements, splice() will only remove elements from the array
 
-  Return: The reversed array.
+  Return: An array containing the deleted elements. If only one element is removed, an array of one element is returned. If no elements are removed, an empty array is returned.
 
-  The reverse method transposes the elements of the calling array object in place, mutating the array, and returning a reference to the array.
 
   REQUIREMENTS:
-  - The reverse method transposes the elements of the calling array object (in place)
-  - Mutates the original array
-  - Returns a reference to the array
+  - If you don't specify any elements, splice() will only remove elements from the array.
+  - Should return array of deleted elements
+  - If no elements are removed, empty array returned
+  - If start > array.length, starting index will be set to array.length 
+  - If negative, will begin that many elements from the end of the array (with origin -1) and will be set to 0 if absolute value is greater than the length of the array.
+  - If no deleteCount, or if its value > array.length - start, all of the elements from start through the end of the array will be deleted.
+  - If deleteCount is 0 or negative, no elements are removed
+  - If you specify a different number of elements to insert than the number you're removing, the array will have a different length at the end of the call.
    
   */
 
-  function reverse(array) {
+  function splice(array, start, deleteCount, ...args) {
+    var addCount = args.length;
+    var len = array.length;
+    var deletedArray = [];
 
+    start = len + start < 0 ? 0 : start;
+    start = start < 0 ? len + start : start;
+    start = start > len ? len : start;
+
+    deleteCount = deleteCount === 0 || deleteCount ? deleteCount : len;
+    deleteCount = deleteCount < 0 ? 0 : deleteCount;
+    deleteCount = deleteCount > len - start ? len - start : deleteCount;
+
+    var shift = addCount - deleteCount;
+
+    //delete elements - shift
+    if (deleteCount != 0) {
+    for (var i = 0; start + i < len; i++) {
+      if (i < deleteCount) {
+        deletedArray[i] = array[start + i];
+      }
+      if(start + i + deleteCount in array) {
+        array[start + i] = array[start + i + deleteCount];
+      }
+    }
+    array.length = len - deleteCount;
+    }
+
+    if (addCount > 0) {
+      //Shift right
+      for (var j = array.length - 1; j >= start; j--) {
+        array[j + addCount] = array[j];
+      }
+      //add elements
+      for (var i = 0; i < addCount; i++) {
+        array[start + i] = args[i];
+      }
+    }
+
+    return deletedArray;
   }
 
   tests({
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();}
+    'If no elements and no deleteCount, remove elements from start to end of array': function () {
+      //debugger
+      var testArray = [1,2,3,4,5];
+      splice(testArray, 3);
+      eqArrays(testArray, [1,2,3]);
+    },
+    'If deleteCount is 0 or negative, no elements are removed': function () {
+      var testArray = [1,2,3,4,5];
+      splice(testArray, 0, 0);
+      eqArrays(testArray, [1,2,3,4,5]);
+      splice(testArray, 0, -3);
+      eqArrays(testArray, [1,2,3,4,5]);
+    },
+    'If deleteCount > array.length - start, remove elements from start to end of array.': function () {
+      var testArray = [1,2,3,4,5];
+      splice(testArray, 3, 9);
+      eqArrays(testArray, [1,2,3]);
+    },
+    'If deleteCount, remove deleteCount elements from start.': function () {
+      var testArray = [1,2,3,4,5];
+
+      splice(testArray, 3, 1);
+      eqArrays(testArray, [1,2,3,5]);
+      splice(testArray, 0, 3);
+      eqArrays(testArray, [5]);
+    },
+    'If start < 0, will begin that many elements from the end of the array (with origin -1) and will be set to 0 if absolute value is greater than the length of the array.': function () {
+      var testArray = [1,2,3,4,5];
+      splice(testArray, -1, 1);
+      eqArrays(testArray, [1,2,3,4]);
+
+      var testArray = [1,2,3,4,5];
+      splice(testArray, -2, 1);
+      eqArrays(testArray, [1,2,3,5]);
+    },
+    'Should return array of deleted elements': function () {
+      eqArrays(splice([1,2,3,4,5], 3), [4,5]);
+    },
+    'If no elements are removed, empty array returned': function () {
+      
+      eqArrays(splice([1,2,3,4,5], 3, 0), []);
+      },
+    'Adds given elements to the array.': function () {
+      var testArray = [1,2,3,4,5];
+      splice(testArray, 3, 2, 'x', 'y');
+      eqArrays(testArray, [1,2,3,'x','y']);
+
+      splice(testArray, 0, 1, 'x');
+      eqArrays(testArray, ['x',2,3,'x','y']);
+      },
+    'If start > array.length, starting index will be set to array.length': function () {
+      var testArray = [1,2,3,4,5];
+      splice(testArray, 8, 7, 'x', 'y');
+      eqArrays(testArray, [1,2,3,4,5,'x','y']);
+    },
+    
+    'If you specify a different number of elements to insert than the number you\'re removing, the array will have a different length at the end of the call.': function () {
+      var testArray = [1,2,3,4,5];
+
+      splice(testArray, 1, 1, 'x', 'y');
+      eqArrays(testArray, [1,'x','y',3,4,5])
+    },
 
   });
 

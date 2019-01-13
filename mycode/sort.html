@@ -28,6 +28,7 @@
   function sort(array, compareFunction) {
     var i = 1;
     var temp; var j;
+    var len = array.length;
 
     compareFunction = compareFunction ? compareFunction : function(a, b)  {
       a = '' + a;
@@ -47,7 +48,8 @@
       return compareFunction(a,b);
     }
 
-    while (i < array.length) {
+    /* Insertion sort method */
+    while (i < len) {
       temp = array[i];
       j = i - 1;
       while (j >= 0 && compare(array[j],temp) > 0) {
