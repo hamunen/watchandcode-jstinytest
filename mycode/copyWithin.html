@@ -2,33 +2,46 @@
 <script>
 
   /*
-  The reverse() method reverses an array in place. The first array element becomes the last, and the last array element becomes the first.
+  The copyWithin() method shallow copies part of an array to another location in the same array and returns it, without modifying its size.
 
   Parameters:
-    - none
+    - target: Zero based index at which to copy the sequence to.
+    - start (optional): Zero based index at which to start copying elements from. 
+    - end (optional): Zero based index at which to end copying elements from
 
-  Return: The reversed array.
 
-  The reverse method transposes the elements of the calling array object in place, mutating the array, and returning a reference to the array.
+  Return: The modified array.
 
   REQUIREMENTS:
-  - The reverse method transposes the elements of the calling array object (in place)
-  - Mutates the original array
-  - Returns a reference to the array
+  - If no start or end and target zero, returns unchanged array
+  - If target is positioned after start, the copied sequence will be trimmed to fit arr.length
+  - If target negative, target will be counted from the end.
+  - If target is at or greater than arr.length, nothing will be copied. 
+  - If negative, start will be counted from the end.
+  - Copies up to but not including end
+  - If negative, end will be counted from the end.
+  - If start is omitted, copyWithin will copy from the start (defaults to 0).
+  - Modifies the original array
    
   */
 
-  function reverse(array) {
+  function copyWithin(array, target, start, end) {
 
   }
 
   tests({
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();},
-    '': function () {fail();}
+    'If no start or end and target zero, returns unchanged array': function () {
+      
+    },
+    'If target is positioned after start, the copied sequence will be trimmed to fit arr.length': function () {fail();},
+    'If target negative, target will be counted from the end': function () {fail();},
+    'If target is at or greater than arr.length, nothing will be copied. ': function () {fail();},
+    'If start, copies from start.': function () {fail();},
+    'If negative, start will be counted from the end': function () {fail();},
+    'Copies up to but not including end': function () {fail();},
+    'If negative, end will be counted from the end': function () {fail();},
+    'If start is omitted, copyWithin will copy from the start (defaults to 0)': function () {fail();},
+    'Modifies the original array': function () {fail();}
 
   });
 
